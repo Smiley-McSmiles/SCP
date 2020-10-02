@@ -1,6 +1,9 @@
 SMILEY'S CONTROL PANEL v1.0
 -Created by Smiley McSmiles
 
+SUPPORTED DISTROBUTIONS:
+Any distrobution that uses apt, dnf, yum, or pacman.
+
 INSTALLATION:
 Simply run the Install via ./Install in terminal. You will need to allow the Install script to run as a program. Then run ./SCP and choose option 'Backup and Setup'.
 
