@@ -87,9 +87,9 @@ echo Do you wish to create the scp.conf file?
 echo only do this if either you dont have the scp.conf file or..
 echo if you have changed the shared username, shared path, or plex media path.  
 echo y/N
-read yesorno
+read yesorno3
 
-if [[ $yesorno2 = y* ]]; then
+if [[ $yesorno3 = y* ]]; then
 
 rm -fv scp.conf
 touch scp.conf
