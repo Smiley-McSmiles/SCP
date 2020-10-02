@@ -28,7 +28,6 @@ cd yay-git
 time makepkg -si
 cd ../
 sudo rm -rfv yay-git
-else
 fi
 
 sudo chmod -fv a+x SCP
