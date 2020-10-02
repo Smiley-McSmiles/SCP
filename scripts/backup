@@ -44,7 +44,7 @@ if [ -x "$(command -v ufw)" ]
 elif [ -x "$(command -v firewalld)" ]
 	then
 		echo Copying FireWall Configuration...
-		sudo cp -fv /etc/firewalld/zones/*.xml backup/ 
+		sudo cp -fv /etc/firewalld/zones/FedoraWorkstation.xml backup/ 
 fi
 
 sudo chown -Rfv $USER:users backup
