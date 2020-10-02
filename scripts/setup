@@ -53,7 +53,7 @@ elif [ -x "$(command -v firewalld)" ]
 		sudo firewall-cmd --reload
 fi
 
-echo Enabling VSFTPD & Samba...
+echo "Enabling VSFTPD & Samba..."
 sleep 1
 sudo systemctl enable vsftpd.service
 sudo systemctl restart vsftpd.service
