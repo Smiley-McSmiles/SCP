@@ -1,0 +1,72 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=9
+WIDTH=78
+BACKTITLE="SMILEYS CONTROL PANEL"
+TITLE="[V S F T P D - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1				"Check VSFTPD Status"
+2				"Edit vsftpd.conf"
+3				"Edit vsftpd.userlist"
+4               		"Start VSFTPD"
+5               		"Stop VSFTPD"
+6               		"Restart VSFTPD"
+7               		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        sudo service vsftpd status
+	echo
+        echo PRESS ENTER TO RETURN TO MENU
+	read enter
+        scripts/vsftpd
+        ;;
+
+    2)
+	sudo nano /etc/vsftpd.conf
+    	scripts/vsftpd
+    	;;
+
+    3)
+    	sudo nano /etc/vsftpd.userlist
+    	scripts/vsftpd
+    	;;
+
+    4)
+    	sudo service vsftpd start
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/vsftpd
+    	;;
+
+    5)
+    	sudo service vsftpd stop
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/vsftpd
+    	;;
+
+    6)
+    	sudo service vsftpd restart
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/vsftpd
+    	;;
+
+    7)
+        ./SCP
+        ;;
+    	
+esac

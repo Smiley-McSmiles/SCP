@@ -1,0 +1,150 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=12
+WIDTH=78
+BACKTITLE="SMILEYS CONTROL PANEL"
+TITLE="[N E T W O R K - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1						"View Open Ports"
+2						"Allow a port"
+3               		"Allow port range"
+4               		"Allow port to specific subnet"
+5   					"Deny a port"
+6               		"Deny a port range"
+7               		"Delete a firewall rule"
+8						"Restart Firewall"
+9               		"Read Firewall Logs"
+10						"Stop Firewall"
+11              		"Start Firewall"
+12              		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+	sudo ufw status
+        echo Press enter to exit
+        read enter
+        scripts/ufw
+        ;;
+
+    2)
+    	sudo ufw status
+        echo Specify port or keep pressing ENTER to exit:
+        read allowport1
+        echo Specify udp or tcp:
+        read allowport2
+        sudo ufw allow $allowport1/$allowport2
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    3)
+        sudo ufw status
+    	echo Specify low end of port range or keep pressing ENTER to exit:
+        read allowrange1
+        echo Specify high end of port range:
+        read allowrange2
+        echo Specify UDP or TCP:
+        read allowrange3
+        sudo ufw allow $allowrange1:$allowrange2/$allowrange3
+        sleep 1
+    	scripts/ufw
+    	;;
+    
+    4)
+        sudo ufw status
+    	echo Specify subnetor keep pressing ENTER to exit:
+        echo Example: 10.0.0.1
+        read subnet
+        echo "Specify high end of port range:"
+        echo Example: "10.0.0.1/24--->24"
+        read mask
+        echo "Specify port to allow:"
+        echo "Protocal is optional, for example: 1337 will open both udp/tcp,"
+        echo "and '1337 proto udp' will only open 1337 on protocal udp."
+        echo "To input a port range use '2500:5000 proto tcp' for example"
+        read allowsubport
+        sudo ufw allow from $subnet/$mask to any port $allowsubport
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    5)
+        sudo ufw status
+    	echo Specify port or keep pressing ENTER to exit:
+        read denyport1
+        echo Specify UDP or TCP:
+        read denyport2
+        sudo ufw allow $denyport1/$denyort2
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    6)
+        sudo ufw status
+    	echo Specify low end of port range or keep pressing ENTER to exit:
+        read denyrange1
+        echo Specify high end of port range:
+        read denyrange2
+        echo Specify UDP or TCP:
+        read denyrange3
+        sudo ufw allow $denyrange1:$denyrange2/$denyrange3
+    	scripts/ufw
+        ;;
+
+    7)
+	sudo ufw status numbered
+        echo Enter number of rule to delete or keep pressing ENTER to exit
+        read deleterule1
+        sudo ufw delete $deleterule1
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    8)
+        echo Reloading UFW rules...
+        sudo ufw reload
+        sleep 1
+        echo Disabling UFW...
+        sudo ufw disable
+        sleep 1
+        echo Enabling UFW
+        sudo ufw enable
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    9)
+        nano /var/log/ufw.log
+    	scripts/ufw
+    	;;
+
+    10)
+        sudo ufw disable
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    11)
+        sudo ufw enable
+        sleep 1
+    	scripts/ufw
+    	;;
+
+    12)
+    	./SCP
+    	;;
+    	
+esac
+

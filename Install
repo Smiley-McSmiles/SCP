@@ -1,0 +1,42 @@
+#!/bin/bash
+
+cat readme.txt
+echo Press Enter to continue with Install Script...
+read enter
+
+echo Preparing to install needed dependancies for Smileys Control Panel...
+
+echo After installation run the SCP shell dialog script via ./SCP...
+
+sleep 3
+
+echo Please enter root password to install dependancies.
+
+packagesNeeded='time git nano screen tmux dialog htop nload'
+if [ -x "$(command -v apt)" ];	     then sudo apt install $packagesNeeded
+elif [ -x "$(command -v dnf)" ];     then sudo dnf install $packagesNeeded
+elif [ -x "$(command -v yum)" ];     then sudo yum install $packagesNeeded
+elif [ -x "$(command -v zypper)" ];  then sudo zypper install $packagesNeeded
+elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu base-devel $packagesNeeded
+else echo "FAILED TO INSTALL PACKAGES: Package manager not found. You must manually install: $packagesNeeded">&2; fi
+
+if [ -x "$(command -v pacman)" ]
+then
+git clone https://aur.archlinux.org/yay-git.git
+
+cd yay-git
+time makepkg -si
+cd ../
+sudo rm -rfv yay-git
+else
+fi
+
+sudo chmod -fv a+x SCP
+sudo chmod -Rfv a+x scripts/*
+
+echo Installation complete...
+echo
+echo Press ENTER to exit and launch .
+read enter
+
+./SCP

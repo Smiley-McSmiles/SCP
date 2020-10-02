@@ -1,0 +1,152 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=12
+WIDTH=78
+BACKTITLE="SMILEYS CONTROL PANEL"
+TITLE="[N E T W O R K - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1				"View Open Ports"
+2				"Allow a port"
+3               		"Allow port range"
+4               		"Whitelist an IP address"
+5   				"Deny a port"
+6               		"Deny a port range"
+7               		"Delete a firewall rule"
+8				"Reload Firewall rules"
+9               		"Read Firewall Logs"
+10				"Stop Firewall"
+11              		"Start Firewall"
+12              		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+    	#view open ports
+	sudo firewall-cmd --list-all
+        echo Press enter to exit
+        read enter
+        scripts/firewalld
+        ;;
+
+    2)
+    	#Allow a port
+    	sudo firewall-cmd --list-all
+        echo Specify port number, service, or keep pressing ENTER to exit:
+        read allowport1
+        echo Specify udp or tcp:
+        read porttype
+        sudo firewall-cmd --zone=FedoraWorkstation --permanent --add-port=$allowport1/$porttype
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    3)
+    	#Allow port range
+        sudo firewall-cmd --list-all
+    	echo Specify low end of port range or keep pressing ENTER to exit:
+        read allowrange1
+        echo Specify high end of port range:
+        read allowrange2
+        echo Specify UDP or TCP:
+        read allowrange3
+	sudo firewall-cmd --zone=FedoraWorkstation --permanent --add-port=$allowrange1-$allowrange2/$allowrange3
+        sleep 1
+    	scripts/firewalld
+    	;;
+    
+    4)
+    	#Whitelist an IP address
+        sudo firewall-cmd --list-all
+    	echo Specify subnet or keep pressing ENTER to exit:
+        echo Example: 10.0.0.1
+        read subnet
+        echo "Specify high end of mask range:"
+        echo Example: "10.0.0.1/24--->24"
+        read mask
+        sudo firewall-cmd --permanent --add-source=$subnet/$mask
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    5)
+    	#Deny a port
+	sudo firewall-cmd --list-all
+	echo Specify port or keep pressing ENTER to exit:
+	read denyport1
+	echo Specify UDP or TCP:
+	read protocol
+	sudo firewall-cmd --remove-port=$denyport1/$protocol
+	sleep 1
+    	scripts/firewalld
+    	;;
+
+    6)
+    	#Deny a port range
+	sudo firewall-cmd --list-all
+    	echo Specify low end of port range or keep pressing ENTER to exit:
+        read denyrange1
+        echo Specify high end of port range:
+        read denyrange2
+        echo Specify UDP or TCP:
+        read protocol
+        sudo firewall-cmd --remove-port=$denyrange1-$denyrange2/$protocol
+    	scripts/firewalld
+        ;;
+
+    7)
+    	#Remove a firewall rule
+        echo Editing /etc/firewalld/zones/FedoraWorkstation.xml with nano:
+        sleep 3
+        sudo nano /etc/firewalld/zones/FedoraWorkstation.xml
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    8)
+    	#Reload Firewall rules
+        echo Reloading Firewalld rules...
+        sudo firewall-cmd --reload
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    9)
+    	#Read Firewall logs
+        sudo cat /var/log/firewalld
+        echo press ENTER to exit
+        read enter
+    	scripts/firewalld
+    	;;
+
+    10)
+    	#Stop firewalld
+        sudo systemctl stop firewalld
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    11)
+    	#Start firewalld
+        sudo systemctl start firewalld
+        sleep 1
+    	scripts/firewalld
+    	;;
+
+    12)
+    	#Return to Main Menu
+    	./SCP
+    	;;
+    	
+esac
+

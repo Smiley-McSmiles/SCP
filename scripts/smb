@@ -1,0 +1,84 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=9
+WIDTH=78
+BACKTITLE="SMILEYS CONTROL PANEL"
+TITLE="[S A M B A - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1						"Check Samba Status-Simple"
+2						"Check Samba Status-Detailed"
+3						"Edit smb.conf"
+4               		"Start Samba"
+5               		"Stop Samba"
+6               		"Restart Samba"
+7               		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        sudo smbstatus
+        echo
+        smbd --version
+        echo PRESS ENTER TO RETURN TO MENU
+        read enter
+        scripts/smb
+        ;;
+
+    2)
+    	echo Press 'Q' to continue...
+        sleep 2
+        smbd --version
+        sleep 2
+        systemctl status smbd
+        echo
+        echo
+    	echo Press 'Q' to continue...
+        sleep 2
+        echo
+        echo
+        systemctl status nmbd
+    	scripts/smb
+    	;;
+
+    3)
+    	sudo nano /etc/samba/smb.conf
+    	scripts/smb
+    	;;
+
+    4)
+    	systemctl start smb nmb
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/smb
+    	;;
+
+    5)
+    	systemctl stop smb nmb
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/smb
+    	;;
+
+    6)
+    	systemctl restart smb nmb
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/smb
+    	;;
+
+    7)
+        ./SCP
+        ;;
+    	
+esac

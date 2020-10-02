@@ -1,0 +1,56 @@
+#!/bin/bash
+
+echo Do you wish to remove the old backup?
+echo y/N
+read yesorno
+echo
+echo Do you wish to backup the /var/lib/plex library?-This can take a long time-
+echo y/N
+read yesorno2
+
+if [[ $yesorno = y* ]]; then
+	rm -rfv backup
+else 
+	echo Ok... Moving on.
+fi
+
+if [[ $yesorno2 = y* ]]; then
+	echo Copying Plex Server Settings...
+	mkdir backup
+	mkdir backup/plex
+	sudo time tar cvf backup/plex/plexbackup.tar /var/lib/plex*
+	sudo chown -fv $USER:$USER backup/plex/plexbackup.tar
+	sudo chmod -fv 770 backup/plex/plexbackup.tar
+else
+	echo Ok... Moving on.
+fi
+
+echo Copying all necessary config files...;
+echo Copying Samba Configuration...;
+sudo cp -fv /etc/samba/smb.conf backup/
+
+echo Copying VSFTPD Configuration...
+sudo cp -fv /etc/vsftpd.conf backup/
+sudo cp -fv /etc/vsftpd.userlist backup/
+
+echo Copying SSHD Configuration...
+sudo cp -fv /etc/ssh/sshd_config backup/
+
+if [ -x "$(command -v ufw)" ]
+	then
+		echo Copying FireWall Configuration...
+		sudo cp -fv /etc/ufw/user*.rules backup/
+
+elif [ -x "$(command -v firewalld)" ]
+	then
+		echo Copying FireWall Configuration...
+		sudo cp -fv /etc/firewalld/zones/*.xml backup/ 
+fi
+
+sudo chown -Rfv $USER:users backup
+sudo chmod -Rfv 770 backup
+
+echo Done backing up..
+sleep 1
+echo Press ENTER to exit
+read ENTER

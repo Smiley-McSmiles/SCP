@@ -1,0 +1,27 @@
+#!/bin/bash
+#======================
+if [ -x "$(command -v rpm)" ]
+	then
+		sudo rm -fv bin/*
+		sudo wget -O bin/plex.rpm 'https://plex.tv/downloads/latest/5?channel=16&build=linux-x86_64&distro=redhat'
+		sudo chmod a+x bin/*
+		sudo dnf install -y bin/plex.rpm
+		sudo rm -fv bin/*
+
+elif [ -x "$(command -v dpkg)" ]
+	then
+		sudo rm -fv bin/*
+		sudo wget -O bin/plex.deb "https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=removed"
+		sudo chmod a+x bin/*
+		sudo dpkg -i bin/plex.deb
+		sudo rm -fv bin/*
+	
+elif [ -x "$(command -v pacman)" ]
+	then
+	yay -Syu
+else
+
+echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
+
+fi
+#======================

@@ -1,0 +1,97 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=5
+WIDTH=78
+BACKTITLE="SMILEYS BACKUP"
+TITLE="[S E R V E R - B A C K U P]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1					"Make backup file"
+2					"Make backup file and shutdown"
+3					"Split archive for fat32"
+4					"Merge split archive"
+5					"Restore Plex meta-data"
+6					"First time setup"
+7					"Delete backups"
+8	              		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        scripts/backup
+        scripts/backupinit
+        ;;
+
+    2)
+        scripts/backup && poweroff
+        ;;
+
+    3)
+    	#Split archive for fat32
+	mkdir backup/plex/plex-split
+	echo Splitting backup/plex/plexbackup.tar--backup/plex/plex-split/plexbackup.tar.parta?
+	sleep 1
+	time split -b 4095M backup/plex/plexbackup.tar backup/plex/plex-split/plexbackup.tar.part
+	sudo chown -Rfv $USER:$USER backup/plex/plex-split
+	echo Press ENTER to continue.
+	read enter
+	scripts/backupinit
+	;;
+
+    4)
+    	#Merge split archives
+	echo Merging backup/plex/plex-split/plexbackup.tar.parta* to backup/plex/plex-split/plexbackup.tar
+	sleep 1
+	time cat backup/plex/plex-split/plexbackup.tar.parta* >backup/plex/plexbackup.tar
+	echo Press ENTER to continue.
+	read enter
+	scripts/backupinit
+	;;
+	
+    5)
+    	#Restore Plex meta-data
+	echo Restoring plex meta-data, please have the plexmediaserver.tar located in
+	echo backup/plex/plexmediaserver.tar
+	sleep 1
+	echo Press ENTER to continue...
+	read enter
+	sudo time tar xvf backup/plex/plexbackup.tar -C /var/lib/
+	sudo time chown -rf plex:plex /var/lib/plex*
+	echo Done!
+	echo Press ENTER to continue...
+	read enter
+	scripts/backupinit
+    	;;
+
+    6)
+	scripts/setup
+	scripts/backupinit
+    	;;
+
+    7)
+    	#Delete backups
+	echo ONLY CONTINUE AFTER FIRST TIME SETUP!!!!
+	echo Press ENTER to continue...
+	read enter
+	sudo time rm -rfv backup/*
+	echo backup/* deleted...
+	echo Press ENTER to continue...
+	read enter
+	scripts/backupinit
+    	;;
+
+    8)
+        ./SCP
+        ;;
+
+esac

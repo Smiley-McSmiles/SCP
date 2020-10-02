@@ -1,0 +1,96 @@
+#!/bin/bash
+source scp.conf
+
+HEIGHT=20
+CHOICE_HEIGHT=6
+WIDTH=78
+BACKTITLE="PERMISSIONS CONTROL PANEL"
+TITLE="[P E R M I S S I O N S - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1               		"ALL"
+2						"Edit this config"
+3						"Fix $shareddirectory"
+4						"Fix $plexmediadirectory"
+5						"Reset Access Control Lists"
+6               		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+		echo Setting Permissions for $shareddirectory...
+		sleep 2
+		sudo chown -Rv shared:users $shareddirectory...
+		sudo chmod -Rv 770 $shareddirectory
+		clear
+
+		echo Setting Permissions for $plexmediadirectory...
+		sleep 2 
+		sudo chown -Rv plex:plex $plexmediadirectory
+		sudo chmod -Rv 770 $plexmediadirectory
+		clear
+
+		echo Setting Access Control Lists for $shareddirectory...
+		sudo setfacl -Rkb $shareddirectory
+		sudo setfacl -Rm d:u:shared:rwx,d:g:users:rwx $shareddirectory
+		echo
+
+		echo Setting Access Control Lists for $plexmediadirectory...
+		sudo setfacl -Rkb $plexmediadirectory
+		sudo setfacl -Rm d:u:plex:rwx,d:g:plex:rwx $plexmediadirectory
+
+		echo
+		echo
+		echo PRESS ENTER TO RETURN
+		read ENTER
+		scripts/permissions
+		;;
+
+    2)
+		sudo nano scripts/permissions
+		scripts/permissions
+		;;
+
+    3)
+		esacecho Setting Permissions for $shareddirectory...
+		sudo chown -Rv shared:users $shareddirectory...
+		sudo chmod -Rv 770 $shareddirectory
+		scripts/permissions
+		;;
+
+    4)
+		echo Setting Permissions for $plexmediadirectory...
+		sudo chown -Rv plex:plex $plexmediadirectory
+		sudo chmod -Rv 770 $plexmediadirectory
+		scripts/permissions
+		;;
+
+    5)
+		echo Setting Access Control Lists for $shareddirectory...
+		sudo setfacl -Rkb $shareddirectory
+		sudo setfacl -Rm d:u:shared:rwx,d:g:users:rwx $shareddirectory
+		echo
+
+		echo Setting Access Control Lists for $plexmediadirectory...
+		sudo setfacl -Rkb $plexmediadirectory
+		sudo setfacl -Rm d:u:plex:rwx,d:g:plex:rwx $plexmediadirectory
+
+		echo Permissions for $shareddirectory and $plexmediadirectory have been reset.
+		sleep 2
+		scripts/permissions
+		;;
+
+    6)
+        ./SCP
+    	;;
+esac

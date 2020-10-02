@@ -1,0 +1,117 @@
+#!/bin/bash
+source scp.conf
+
+HEIGHT=20
+CHOICE_HEIGHT=11
+WIDTH=78
+BACKTITLE="SMILEYS CONTROL PANEL"
+TITLE="[C O N T R O L - P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1						"View System Monitor"
+2						"Update system"
+3						"Plex Control Panel"
+4     	 		  		"Samba Control Panel"
+5						"VSFTPD Control Panel"
+6						"SSH Control Panel"
+7						"Backup & Setup"
+8						"Network Security"
+9             	 		"View Disk Utilization"
+10						"Permissions Control Panel"
+11               		"Power Management"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        echo Press CTRL + C two times to exit.
+        sleep 2
+	    tmux new-session -d htop \; split-window nload -u K \; attach
+        ./SCP
+        ;;
+
+    2)
+    	if [ -x "$(command -v apt)" ];	     then sudo apt update && sudo apt upgrade
+		elif [ -x "$(command -v dnf)" ];     then sudo dnf upgrade
+		elif [ -x "$(command -v yum)" ];     then sudo yum update && sudo yum upgrade
+		elif [ -x "$(command -v zypper)" ];  then sudo zypper ref && sudo zypper up
+		elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu
+		else echo "FAILED TO UPDATE PACKAGES">&2; fi
+    	./SCP
+    	;;
+
+    3)
+    	scripts/plex
+    	./SCP
+    	;;
+
+    4)
+    	scripts/smb
+    	./SCP
+    	;;
+
+    5)
+    	scripts/vsftpd
+    	./SCP
+    	;;
+    
+    6)
+    	scripts/ssh
+    	./SCP
+    	;;
+
+    7)
+    	scripts/backupinit
+    	./SCP
+    	;;
+
+    8)
+    	if [ -x "$(command -v ufw)" ]
+			then
+				scripts/ufw
+		elif [ -x "$(command -v firewalld)" ]
+			then
+				scripts/firewalld
+		fi
+    	./SCP
+    	;;
+
+    9)
+        echo Plex:
+        df -h $plexmediadirectory*
+        echo
+        echo Shared:
+        df -h $shareddirectory
+        echo
+        echo $USER:
+        df -h ~/
+        echo
+        echo Root:
+        df -h /
+        echo
+        echo
+        echo Press ENTER to exit
+        read enter
+        ./SCP
+    	;;
+
+    10)
+		scripts/permissions
+		./SCP
+		;;
+
+    11)
+        scripts/power
+        ./SCP
+        ;;
+    	
+esac

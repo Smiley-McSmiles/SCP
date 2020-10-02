@@ -1,0 +1,63 @@
+#!/bin/bash
+HEIGHT=20
+CHOICE_HEIGHT=6
+WIDTH=78
+BACKTITLE="PLEX CONTROL PANEL"
+TITLE="[P L E X - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1               	"Update Plex"
+2					"Start Plex"
+3					"Stop Plex"
+4					"Restart Plex"
+5					"Set Permissions"
+6              		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        scripts/plexupdate
+        scripts/plex
+        ;;
+    
+    2)
+        sudo systemctl start plexmediaserver
+        echo Plex has been started
+        sleep 2
+        scripts/plex
+        ;;
+
+    3)
+        sudo systemctl stop plexmediaserver
+        echo Plex has been stopped
+        sleep 2
+        scripts/plex
+    	;;
+
+    4)
+        sudo systemctl restart plexmediaserver
+        echo Plex has been restarted
+        sleep 2
+        scripts/plex
+    	;;
+    
+    5)
+    	scripts/permissions
+        scripts/plex
+    	;;
+
+    6)
+        ./SCP
+    	;;
+    	
+esac

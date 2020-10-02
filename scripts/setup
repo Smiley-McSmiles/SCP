@@ -1,0 +1,150 @@
+#!/bin/bash
+#Restore Plex meta-data
+sudo tar xvf backup/plex/plexbackup.tar /var/lib/ -C /var/lib/
+#======================
+
+#Install samba and VSFTPD
+echo Installing Samba, VSFTPD, and UFW...
+sleep 3
+
+packagesNeeded='samba vsftpd'
+if [ -x "$(command -v apt)" ];	 then sudo apt install ufw $packagesNeeded
+elif [ -x "$(command -v dnf)" ];     then sudo dnf install $packagesNeeded
+elif [ -x "$(command -v yum)" ];     then sudo yum install $packagesNeeded
+elif [ -x "$(command -v zypper)" ];  then sudo zypper install $packagesNeeded
+elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu ufw $packagesNeeded
+else echo "FAILED TO INSTALL PACKAGES: Package manager not found. You must manually install: $packagesNeeded">&2; fi
+
+
+#Copy over backed up configuration files.
+echo Installing all necessary config files...
+sleep 3
+echo Installing Samba Configuration...
+sleep 1
+sudo cp -fv backup/scp.conf /etc/samba/
+sudo chown -fv root:root /etc/samba/scp.conf
+
+echo Installing VSFTPD Configuration...
+sleep 1
+sudo cp -fv backup/vsftpd.conf /etc/
+sudo cp -fv backup/vsftpd.userlist /etc/
+sudo chown -fv root:root /etc/vsftpd*
+
+if [ -x "$(command -v ufw)" ]
+	then
+		echo Installing FireWall Configuration...
+		sleep 1
+		sudo cp -fv backup/user*.rules /etc/ufw/
+		sudo chown -fv root:root /etc/ufw/user*.rules
+
+		echo Enabling UFW FireWall...
+		sleep 1
+		sudo ufw enable
+
+elif [ -x "$(command -v firewalld)" ]
+	then
+		echo Installing FireWall Configuration...
+		sleep 1
+		sudo cp -fv backup/*.xml /etc/firewalld/zones/
+		sudo chown -fv root:root /etc/firewalld/zones/*.xml
+		sudo chmod -fv 700 /etc/firewalld/zones/*.xml
+		echo Reloading Firewalld
+		sleep 1
+		sudo firewall-cmd --reload
+fi
+
+echo Enabling VSFTPD & Samba...
+sleep 1
+sudo systemctl enable vsftpd.service
+sudo systemctl restart vsftpd.service
+sudo systemctl enable smb nmb
+sudo systemctl restart smb nmb
+#======================
+
+#Create /home/shared user for use with samba
+echo Creating user for a shared directory...
+echo Please enter the username of the new user
+read sharedusername
+echo Please enter the home directory for this new user
+read shareddirectory
+sudo useradd -d $shareddirectory -m -U -G users $sharedusername
+clear
+echo Please enter the password for user $sharedusername
+sudo passwd $sharedusername
+
+if [ -x "$(command -v getenforce)" ]
+	then
+		echo Creating SELinux exception for $shareddirectory...
+		sudo chcon -t samba_share_t $shareddirectory -R
+fi
+
+sleep 1
+echo Creating Samba user $sharedusername, please enter the samba password for Samba user $sharedusername.
+sudo smbpasswd -a $sharedusername
+#======================
+clear && pwd && ls -l
+echo Do you wish to create the scp.conf file?
+echo only do this if either you dont have the scp.conf file or..
+echo if you have changed the shared username, shared path, or plex media path.  
+echo y/N
+read yesorno
+
+if [[ $yesorno2 = y* ]]; then
+
+rm -fv scp.conf
+touch scp.conf
+echo "sharedusername=$sharedusername" >> scp.conf
+echo "shareddirectory=$shareddirectory" >> scp.conf
+
+echo Please enter your Plex media directory
+read plexmediadirectory
+echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
+cat scp.conf
+echo please press enter to continue
+read enter
+else
+	echo Ok... Moving on.
+fi
+
+echo Done installing configuration files and adding user $sharedusername..
+sleep 1
+clear
+
+#======================
+if [ -x "$(command -v rpm)" ]
+	then
+		sudo rm -fv bin/*
+		sudo wget -O bin/plex.rpm 'https://plex.tv/downloads/latest/5?channel=16&build=linux-x86_64&distro=redhat'
+		sudo chmod a+x bin/*
+		sudo dnf install -y bin/plex.rpm
+		sudo rm -fv bin/*
+
+elif [ -x "$(command -v dpkg)" ]
+	then
+		sudo rm -fv bin/*
+		sudo wget -O bin/plex.deb "https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=removed"
+		sudo chmod a+x bin/*
+		sudo dpkg -i bin/plex.deb
+		sudo rm -fv bin/*
+	
+elif [ -x "$(command -v pacman)" ]
+	then
+		echo Installing Plex using yay -S plex-media-server-plexpass...
+		sleep 3
+		yay -S plex-media-server-plexpass
+		sudo chown -Rfv plex:plex /var/lib/plex
+		sudo systemctl stop plexmediaserver
+		sudo systemctl start plexmediaserver
+		echo Plex is done installing.
+
+else
+
+echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
+
+fi
+#======================
+echo Navigate to the Plex Web app to claim the server localhost:32400/web.
+echo  
+echo Press ENTER to exit
+read enter
+
