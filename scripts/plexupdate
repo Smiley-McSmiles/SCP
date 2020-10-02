@@ -2,6 +2,7 @@
 #======================
 if [ -x "$(command -v rpm)" ]
 	then
+		mkdir bin
 		sudo rm -fv bin/*
 		sudo wget -O bin/plex.rpm 'https://plex.tv/downloads/latest/5?channel=16&build=linux-x86_64&distro=redhat'
 		sudo chmod a+x bin/*
@@ -10,6 +11,7 @@ if [ -x "$(command -v rpm)" ]
 
 elif [ -x "$(command -v dpkg)" ]
 	then
+		mkdir bin
 		sudo rm -fv bin/*
 		sudo wget -O bin/plex.deb "https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=removed"
 		sudo chmod a+x bin/*
