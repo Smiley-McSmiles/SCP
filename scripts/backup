@@ -37,7 +37,10 @@ do
 	echo Copying Plex Server Settings...
 	mkdir backup
 	mkdir backup/plex
-	sudo time tar cvf backup/plex/plexbackup.tar /var/lib/plex*
+	scpDirectory=`pwd`
+	cd /var/lib
+	sudo time tar cvf $scpDirectory/backup/plex/plexbackup.tar plex*
+	cd $scpDirectory
 	sudo chown -fv $USER:$USER backup/plex/plexbackup.tar
 	sudo chmod -fv 770 backup/plex/plexbackup.tar
  #=====

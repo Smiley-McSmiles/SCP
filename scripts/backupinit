@@ -62,7 +62,6 @@ case $CHOICE in
     	#Restore Plex meta-data
 	echo Restoring plex meta-data, please have the plexmediaserver.tar located in
 	echo backup/plex/plexmediaserver.tar
-	sleep 1
 	echo Press ENTER to continue...
 	read enter
 	sudo time tar xvf backup/plex/plexbackup.tar -C /var/lib/
