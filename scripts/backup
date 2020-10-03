@@ -1,32 +1,62 @@
 #!/bin/bash
 
-echo Do you wish to remove the old backup?
-echo y/N
-read yesorno
-echo
-echo Do you wish to backup the /var/lib/plex library?-This can take a long time-
-echo y/N
-read yesorno2
+#Remove old backup
+#=================
+while true
+do
+ read -r -p "Do you wish to remove the old backup? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ rm -rfv backup
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+#=================
 
-if [[ $yesorno = y* ]]; then
-	rm -rfv backup
-else 
-	echo Ok... Moving on.
-fi
-
-if [[ $yesorno2 = y* ]]; then
+#Bacukup /var/lib/plexmediaserver
+#=================
+clear
+while true
+do
+ read -r -p "Do you wish to backup the /var/lib/plex library?-This can take a long time- [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
 	echo Copying Plex Server Settings...
 	mkdir backup
 	mkdir backup/plex
 	sudo time tar cvf backup/plex/plexbackup.tar /var/lib/plex*
 	sudo chown -fv $USER:$USER backup/plex/plexbackup.tar
 	sudo chmod -fv 770 backup/plex/plexbackup.tar
-else
-	echo Ok... Moving on.
-fi
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+clear
+#=================
 
-echo Copying all necessary config files...;
-echo Copying Samba Configuration...;
+echo Copying all necessary config files...
+echo Copying Samba Configuration...
 sudo cp -fv /etc/samba/smb.conf backup/
 
 echo Copying VSFTPD Configuration...

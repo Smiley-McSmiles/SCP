@@ -1,0 +1,86 @@
+#!/bin/bash
+
+echo This is only used for generating a new smb.conf...
+echo If you already have your /etc/samba/smb.conf file configured
+echo it is recommended you do not use this option as it will overwrite it
+echo
+
+#Ask to 
+while true
+do
+ read -r -p "Do you wish to continue? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ touch samba-configuration.conf
+ echo "#============================ Global definition ================================" >> samba-configuration.conf
+ echo "" >> samba-configuration.conf
+ echo "[global]" >> samba-configuration.conf
+ echo Please enter the name of the computer
+ read netBiosName
+ echo " netbios name = $netBiosName" >> samba-configuration.conf
+ echo 'Please enter the workgroup name(Can be anything, but normally WORKGROUP or SAMBA)'
+ read workGroupName
+ echo " workgroup = $workGroupName" >> samba-configuration.conf
+ echo "#============================ Share Definitions ==============================" >> samba-configuration.conf
+ echo "" >> samba-configuration.conf
+ echo 'Please enter the name of your share (Can be anything, normally the folder name)'
+ read shareName
+ echo "[$shareName]" >> samba-configuration.conf
+ echo " comment = $netBiosName $shareName Drive" >> samba-configuration.conf
+ echo Please enter the absolute path to the directory you wish to share
+ echo for example /home/shared
+ read sharedPath
+ echo " path = $sharedPath" >> samba-configuration.conf
+ echo please enter the valid samba users separated by a space
+ echo "(You will need to add any users with the command 'smbpasswd -a <USER>'"
+ read validUsers
+ echo " valid users = $validUsers" >> samba-configuration.conf
+ echo "Would you like to make this samba share public? Please type [yes/no]"
+ read sambaPublic
+ echo " public = $sambaPublic" >> samba-configuration.conf
+ echo "Would you like this samba share to be writeable using samba?(copying files over via samba)[yes/no]"
+ read sambaWritable
+ echo " writeable = $sambaWritable" >> samba-configuration.conf
+ echo "Please enter the 4 digit create mask you would like the files to have when created with $validUsers (0760)"
+ read createMask
+ echo " create mask = $createMask" >> samba-configuration.conf
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+
+cat samba-configuration.conf
+
+while true
+do
+ read -r -p "Are you sure you want to write this config to /etc/samba? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ sudo mv samba-configuration.conf /etc/samba/smb.conf
+ sudo chown -fv /etc/samba/smb.conf
+ rm -fv samba-configuration.conf
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo deleteing samba-configuration.conf
+ rm -fv samba-configuration.conf
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done

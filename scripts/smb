@@ -9,11 +9,12 @@ MENU="What would you like to do?"
 OPTIONS=(
 1						"Check Samba Status-Simple"
 2						"Check Samba Status-Detailed"
-3						"Edit smb.conf"
-4               		"Start Samba"
-5               		"Stop Samba"
-6               		"Restart Samba"
-7               		"MAIN MENU"
+3						"Generate a new samba config"
+4						"Edit smb.conf"
+5               		"Start Samba"
+6               		"Stop Samba"
+7               		"Restart Samba"
+8               		"MAIN MENU"
 )
 
 CHOICE=$(dialog --clear \
@@ -36,48 +37,47 @@ case $CHOICE in
         ;;
 
     2)
-    	echo Press 'Q' to continue...
-        sleep 2
         smbd --version
-        sleep 2
-        systemctl status smbd
-        echo
-        echo
-    	echo Press 'Q' to continue...
-        sleep 2
-        echo
-        echo
-        systemctl status nmbd
+        systemctl status smb nmb
+        echo Press ENTER to exit.
+        read enter
     	scripts/smb
     	;;
-
+    	
     3)
-    	sudo nano /etc/samba/smb.conf
+		scripts/smbguided
     	scripts/smb
     	;;
 
     4)
-    	systemctl start smb nmb
-        echo Done... Returning to menu...
-        sleep 2
+    	sudo nano /etc/samba/smb.conf
     	scripts/smb
     	;;
 
     5)
-    	systemctl stop smb nmb
+    	systemctl start smb nmb
+		systemctl enable smb nmb
         echo Done... Returning to menu...
         sleep 2
     	scripts/smb
     	;;
 
     6)
-    	systemctl restart smb nmb
+    	systemctl stop smb nmb
+    	systemctl disable smb nmb
         echo Done... Returning to menu...
         sleep 2
     	scripts/smb
     	;;
 
     7)
+    	systemctl restart smb nmb
+        echo Done... Returning to menu...
+        sleep 2
+    	scripts/smb
+    	;;
+
+    8)
         ./SCP
         ;;
     	

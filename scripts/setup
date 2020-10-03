@@ -1,6 +1,24 @@
 #!/bin/bash
 #Restore Plex meta-data
-sudo tar xvf backup/plex/plexbackup.tar -C /
+while true
+do
+ read -r -p "[experimental]Would you like to restore the plexbackup.tar? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ sudo tar xvf backup/plex/plexbackup.tar -C /
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+
 #======================
 
 #Install samba and VSFTPD
@@ -17,6 +35,14 @@ else echo "FAILED TO INSTALL PACKAGES: Package manager not found. You must manua
 
 
 #Copy over backed up configuration files.
+clear
+while true
+do
+ read -r -p "Would you like to copy over the backup files for Samba, VSFTPD, and UFW/Firewalld? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+#=====
 echo Installing all necessary config files...
 sleep 3
 echo Installing Samba Configuration...
@@ -59,15 +85,36 @@ sudo systemctl enable vsftpd.service
 sudo systemctl restart vsftpd.service
 sudo systemctl enable smb nmb
 sudo systemctl restart smb nmb
+#=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+
 #======================
 
-#Create /home/shared user for use with samba
+#Create user for use with samba
+#======================
+while true
+do
+ read -r -p "Create a Samba user?[Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+#=====
 echo Creating user for a shared directory...
 echo Please enter the username of the new user
 read sharedusername
 echo Please enter the home directory for this new user
 read shareddirectory
-sudo useradd -d $shareddirectory -m -U -G users $sharedusername
+sudo useradd -r -d $shareddirectory -m -U -G users $sharedusername
 clear
 echo Please enter the password for user $sharedusername
 sudo passwd $sharedusername
@@ -81,69 +128,115 @@ fi
 sleep 1
 echo Creating Samba user $sharedusername, please enter the samba password for Samba user $sharedusername.
 sudo smbpasswd -a $sharedusername
+#=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
 #======================
-clear && pwd && ls -l
-echo Do you wish to create the scp.conf file?
-echo only do this if either you dont have the scp.conf file or..
-echo if you have changed the shared username, shared path, or plex media path.  
-echo y/N
-read yesorno3
 
-if [[ $yesorno3 = y* ]]; then
+#scp.conf setup
+#======================
+clear
+echo Only do this if either you dont have the scp.conf file or..
+echo if you have changed the shared username, shared path, or plex media path. 
+while true
+do
+ read -r -p "Do you wish to create the scp.conf file? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+	clear && pwd && ls -l
+	rm -fv scp.conf
+	touch scp.conf
+	echo "sharedusername=$sharedusername" >> scp.conf
+	echo "shareddirectory=$shareddirectory" >> scp.conf
 
-rm -fv scp.conf
-touch scp.conf
-echo "sharedusername=$sharedusername" >> scp.conf
-echo "shareddirectory=$shareddirectory" >> scp.conf
-
-echo Please enter your Plex media directory
-read plexmediadirectory
-echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
-cat scp.conf
-echo please press enter to continue
-read enter
-else
-	echo Ok... Moving on.
-fi
+	echo Please enter your Plex media directory
+	read plexmediadirectory
+	echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
+	cat scp.conf
+	echo please press enter to continue
+	read enter
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
 
 echo Done installing configuration files and adding user $sharedusername..
 sleep 1
 clear
-
 #======================
-if [ -x "$(command -v rpm)" ]
-	then
-		mkdir bin
-		sudo rm -fv bin/*
-		sudo wget -O bin/plex.rpm 'https://plex.tv/downloads/latest/5?channel=16&build=linux-x86_64&distro=redhat'
-		sudo chmod a+x bin/*
-		sudo dnf install -y bin/plex.rpm
-		sudo rm -fv bin/*
+#Install plex
+#======================
+while true
+do
+ read -r -p "Install Plex Media Server? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+	if [ -x "$(command -v rpm)" ]
+		then
+			mkdir bin
+			sudo rm -fv bin/*
+			sudo wget -O bin/plex.rpm 'https://plex.tv/downloads/latest/5?channel=16&build=linux-x86_64&distro=redhat'
+			sudo chmod a+x bin/*
+			sudo dnf install -y bin/plex.rpm
+			sudo rm -fv bin/*
 
-elif [ -x "$(command -v dpkg)" ]
-	then
-		makdir bin
-		sudo rm -fv bin/*
-		sudo wget -O bin/plex.deb "https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=removed"
-		sudo chmod a+x bin/*
-		sudo dpkg -i bin/plex.deb
-		sudo rm -fv bin/*
-	
-elif [ -x "$(command -v pacman)" ]
-	then
-		echo Installing Plex using yay -S plex-media-server-plexpass...
-		sleep 3
-		yay -S plex-media-server-plexpass
-		sudo chown -Rfv plex:plex /var/lib/plex
-		sudo systemctl stop plexmediaserver
-		sudo systemctl start plexmediaserver
-		echo Plex is done installing.
+	elif [ -x "$(command -v dpkg)" ]
+		then
+			makdir bin
+			sudo rm -fv bin/*
+			sudo wget -O bin/plex.deb "https://plex.tv/downloads/latest/1?channel=16&build=linux-ubuntu-x86_64&distro=ubuntu&X-Plex-Token=removed"
+			sudo chmod a+x bin/*
+			sudo dpkg -i bin/plex.deb
+			sudo rm -fv bin/*
+		
+	elif [ -x "$(command -v pacman)" ]
+		then
+			echo Installing Plex using yay -S plex-media-server-plexpass...
+			sleep 3
+			yay -S plex-media-server-plexpass
+			sudo chown -Rfv plex:plex /var/lib/plex
+			sudo systemctl stop plexmediaserver
+			sudo systemctl start plexmediaserver
+			echo Plex is done installing.
 
-else
+	else
 
-echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
+	echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
 
-fi
+	fi
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
 #======================
 echo Navigate to the Plex Web app to claim the server localhost:32400/web.
 echo  

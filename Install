@@ -1,8 +1,30 @@
 #!/bin/bash
 
-cat readme.txt
-echo Press Enter to continue with Install Script...
-read enter
+#Readme.txt
+#==========
+while true
+do
+ read -r -p "Would you like to read the Readme.txt? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ cat readme.txt
+ echo Press Enter to continue with Install Script...
+ read enter
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, moving on."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+#==========
 
 echo Preparing to install needed dependancies for Smileys Control Panel...
 
@@ -34,8 +56,28 @@ sudo chmod -fv a+x SCP
 sudo chmod -Rfv a+x scripts/*
 
 echo Installation complete...
-echo
-echo Press ENTER to exit and launch .
-read enter
+sleep 2
 
-./SCP
+#Launch SCP?
+#===========
+while true
+do
+ read -r -p "Would you like to launch Smiley's Control Panel? [Y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ ./SCP
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo "Okay, Exiting."
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+#===========
