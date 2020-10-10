@@ -1,30 +1,27 @@
 #!/bin/bash
-#Restore Plex meta-data
-while true
-do
- read -r -p "[experimental]Would you like to restore the plexbackup.tar? [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
- sudo tar xvf backup/plex/plexbackup.tar -C /
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
 
+#Checklist Options
+#============================
+checklistChoice="$(dialog --stdout --checklist "Select items with SPACEBAR:" 0 0 0 \
+  1 "Restore plexbackup.tar" off \
+  2 "Install Samba VSFTPD" off \
+  3 "Restore Samba VSFTPD and Firewall config files" off \
+  4 "Enable Samba" off \
+  5 "Enable VSFTPD" off \
+  6 "Create Samba user" off \
+  7 "Install Plex Media Server" off \
+  8 "Create scp.conf" off )"
+clear
+#============================
+#1 Restore Plex meta-data
 #======================
-
-#Install samba and VSFTPD
-echo Installing Samba, VSFTPD, and UFW...
-sleep 3
-
+if [[ $checklistChoice == *1* ]]; then
+	sudo tar xvf backup/plex/plexbackup.tar -C /
+fi
+#======================
+#2 Install samba and VSFTPD
+#======================
+if [[ $checklistChoice == *2* ]]; then
 packagesNeeded='samba vsftpd'
 if [ -x "$(command -v apt)" ];	 then sudo apt install ufw $packagesNeeded
 elif [ -x "$(command -v dnf)" ];     then sudo dnf install $packagesNeeded
@@ -32,166 +29,86 @@ elif [ -x "$(command -v yum)" ];     then sudo yum install $packagesNeeded
 elif [ -x "$(command -v zypper)" ];  then sudo zypper install $packagesNeeded
 elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu ufw $packagesNeeded
 else echo "FAILED TO INSTALL PACKAGES: Package manager not found. You must manually install: $packagesNeeded">&2; fi
-
-
-#Copy over backed up configuration files.
-clear
-while true
-do
- read -r -p "Would you like to copy over the backup files for Samba, VSFTPD, and UFW/Firewalld? [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
-#=====
-echo Installing all necessary config files...
-sleep 3
-echo Installing Samba Configuration...
-sleep 1
-sudo cp -fv backup/smb.conf /etc/samba/
-sudo chown -fv root:root /etc/samba/scp.conf
-
-echo Installing VSFTPD Configuration...
-sleep 1
-sudo cp -fv backup/vsftpd.conf /etc/
-sudo cp -fv backup/vsftpd.userlist /etc/
-sudo chown -fv root:root /etc/vsftpd*
-
-if [ -x "$(command -v ufw)" ]
-	then
-		echo Installing FireWall Configuration...
-		sleep 1
-		sudo cp -fv backup/user*.rules /etc/ufw/
-		sudo chown -fv root:root /etc/ufw/user*.rules
-
-		echo Enabling UFW FireWall...
-		sleep 1
-		sudo ufw enable
-
-elif [ -x "$(command -v firewalld)" ]
-	then
-		echo Installing FireWall Configuration...
-		sleep 1
-		sudo cp -fv backup/*.xml /etc/firewalld/zones/
-		sudo chown -fv root:root /etc/firewalld/zones/*.xml
-		sudo chmod -fv 700 /etc/firewalld/zones/*.xml
-		echo Reloading Firewalld
-		sleep 1
-		sudo firewall-cmd --reload
 fi
-
-echo "Enabling VSFTPD & Samba..."
-sleep 1
-sudo systemctl enable vsftpd.service
-sudo systemctl restart vsftpd.service
-sudo systemctl enable smb nmb
-sudo systemctl restart smb nmb
-#=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
-
 #======================
-
-#Create user for use with samba
+#3 Copy over backed up configuration files.
 #======================
-while true
-do
- read -r -p "Create a Samba user?[Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
-#=====
-echo Creating user for a shared directory...
-echo Please enter the username of the new user
-read sharedusername
-echo Please enter the home directory for this new user
-read shareddirectory
-sudo useradd -r -d $shareddirectory -m -U -G users $sharedusername
-clear
-echo Please enter the password for user $sharedusername
-sudo passwd $sharedusername
+if [[ $checklistChoice == *3* ]]; then
+	echo Installing all necessary config files...
+	sleep 3
+	echo Installing Samba Configuration...
+	sleep 1
+	sudo cp -fv backup/smb.conf /etc/samba/
+	sudo chown -fv root:root /etc/samba/scp.conf
 
-if [ -x "$(command -v getenforce)" ]
-	then
-		echo Creating SELinux exception for $shareddirectory...
-		sudo chcon -t samba_share_t $shareddirectory -R
+	echo Installing VSFTPD Configuration...
+	sleep 1
+	sudo cp -fv backup/vsftpd.conf /etc/
+	sudo cp -fv backup/vsftpd.userlist /etc/
+	sudo chown -fv root:root /etc/vsftpd*
+
+	if [ -x "$(command -v ufw)" ]
+		then
+			echo Installing FireWall Configuration...
+			sleep 1
+			sudo cp -fv backup/user*.rules /etc/ufw/
+			sudo chown -fv root:root /etc/ufw/user*.rules
+
+			echo Enabling UFW FireWall...
+			sleep 1
+			sudo ufw enable
+
+	elif [ -x "$(command -v firewalld)" ]
+		then
+			echo Installing FireWall Configuration...
+			sleep 1
+			sudo cp -fv backup/*.xml /etc/firewalld/zones/
+			sudo chown -fv root:root /etc/firewalld/zones/*.xml
+			sudo chmod -fv 700 /etc/firewalld/zones/*.xml
+			echo Reloading Firewalld
+			sleep 1
+			sudo firewall-cmd --reload
+	fi
 fi
-
-sleep 1
-echo Creating Samba user $sharedusername, please enter the samba password for Samba user $sharedusername.
-sudo smbpasswd -a $sharedusername
-#=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
 #======================
+#4 Enable Samba
+#==============
+if [[ $checklistChoice == *4* ]]; then
+	echo "Enabling Samba..."
+	sudo systemctl enable smb nmb
+	sudo systemctl restart smb nmb
+fi
+#==============
+#5 Enable VSFTPD
+#===============
+if [[ $checklistChoice == *5* ]]; then
+	sudo systemctl enable vsftpd.service
+	sudo systemctl restart vsftpd.service
+fi
+#===============
+#6 Create user for use with samba
+#==============================
+if [[ $checklistChoice == *6* ]]; then
+	sharedusername="$(dialog --stdout --inputbox "Enter the Samba user:" 8 40)"
+	shareddirectory="$(dialog --stdout --inputbox "Please enter the home directory for this new user:" 8 40)"
+	sudo useradd -r -d $shareddirectory -m -U -G users $sharedusername
+	echo Please enter the password for user $sharedusername
+	sudo passwd $sharedusername
 
-#scp.conf setup
-#======================
-clear
-echo Only do this if either you dont have the scp.conf file or..
-echo if you have changed the shared username, shared path, or plex media path. 
-while true
-do
- read -r -p "Do you wish to create the scp.conf file? [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
- #=====
-	clear && pwd && ls -l
-	rm -fv scp.conf
-	touch scp.conf
-	echo "sharedusername=$sharedusername" >> scp.conf
-	echo "shareddirectory=$shareddirectory" >> scp.conf
+	if [ -x "$(command -v getenforce)" ]
+		then
+			echo Creating SELinux exception for $shareddirectory...
+			sudo chcon -t samba_share_t $shareddirectory -R
+	fi
 
-	echo Please enter your Plex media directory
-	read plexmediadirectory
-	echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
-	cat scp.conf
-	echo please press enter to continue
-	read enter
- #=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
-
-echo Done installing configuration files and adding user $sharedusername..
-sleep 1
-clear
-#======================
-#Install plex
-#======================
-while true
-do
- read -r -p "Install Plex Media Server? [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
- #=====
+	sleep 1
+	echo Creating Samba user $sharedusername, please enter the samba password for Samba user $sharedusername.
+	sudo smbpasswd -a $sharedusername
+fi
+#==============================
+#7 Install plex
+#==============
+if [[ $checklistChoice == *7* ]]; then
 	if [ -x "$(command -v rpm)" ]
 		then
 			mkdir bin
@@ -225,21 +142,19 @@ do
 	echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
 
 	fi
- #=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
-#======================
-echo Navigate to the Plex Web app to claim the server localhost:32400/web.
-echo  
-echo Press ENTER to exit
-read enter
+fi
+dialog --title Information[!] --msgbox "Navigate to the Plex Web app to claim the server localhost:32400/web." 0 0
+#==============
+#8 scp.conf setup
+#================
+if [[ $checklistChoice == *8* ]]; then
+	clear && pwd && ls -l
+	rm -fv scp.conf
+	touch scp.conf
+	echo "sharedusername=$sharedusername" >> scp.conf
+	echo "shareddirectory=$shareddirectory" >> scp.conf
+	plexmediadirectory="$(dialog --stdout --inputbox "Please enter your Plex media directory:" 8 40)"
+	echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
+fi
+#================
 

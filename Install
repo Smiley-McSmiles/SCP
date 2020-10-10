@@ -4,7 +4,7 @@
 #==========
 while true
 do
- read -r -p "Would you like to read the Readme.txt? [Y/n] " input
+ read -r -p "Would you like to read the Readme.txt? [y/n] " input
  
  case $input in
      [yY][eE][sS]|[yY])
@@ -62,7 +62,7 @@ sleep 2
 #===========
 while true
 do
- read -r -p "Would you like to launch Smiley's Control Panel? [Y/n] " input
+ read -r -p "Would you like to launch Smiley's Control Panel? [y/n] " input
  
  case $input in
      [yY][eE][sS]|[yY])

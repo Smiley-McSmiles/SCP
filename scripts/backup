@@ -1,39 +1,19 @@
 #!/bin/bash
 
-#Remove old backup
-#=================
-while true
-do
- read -r -p "Do you wish to remove the old backup? [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
- #=====
- rm -rfv backup
- #=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
-#=================
+#Dialog checklist for 1 Removing the old backup and 2 creating a backup of /var/lib/plexmediaserver
+#============================
+checklistChoice="$(dialog --stdout --checklist "Select items with SPACEBAR:" 0 0 0 \
+  1 "Remove the old backups?" off \
+  2 "Backup /var/lib/plex?" off )"
+#============================
 
-#Bacukup /var/lib/plexmediaserver
-#=================
-clear
-while true
-do
- read -r -p "Do you wish to backup the /var/lib/plex library?-This can take a long time- [Y/n] " input
- 
- case $input in
-     [yY][eE][sS]|[yY])
- #=====
+#if then checklist data
+#===================
+if [[ $checklistChoice == *1* ]]; then
+	rm -rfv backup
+fi
+
+if [[ $checklistChoice == *2* ]]; then
 	echo Copying Plex Server Settings...
 	mkdir backup
 	mkdir backup/plex
@@ -43,20 +23,10 @@ do
 	cd $scpDirectory
 	sudo chown -fv $USER:$USER backup/plex/plexbackup.tar
 	sudo chmod -fv 770 backup/plex/plexbackup.tar
- #=====
- break
- ;;
-     [nN][oO]|[nN])
- echo "Okay, moving on."
- break
- ;;
-     *)
- echo "Invalid input..."
- ;;
- esac
-done
+fi
 clear
-#=================
+#===================
+
 
 echo Copying all necessary config files...
 echo Copying Samba Configuration...
