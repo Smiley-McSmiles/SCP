@@ -5,8 +5,8 @@
 checklistChoice="$(dialog --stdout --checklist "Select items with SPACEBAR:" 0 0 0 \
   1 "Remove the old backups?" off \
   2 "Backup /var/lib/plex?" off )"
+clear
 #============================
-
 #if then checklist data
 #===================
 if [[ $checklistChoice == *1* ]]; then
