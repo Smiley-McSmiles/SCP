@@ -27,7 +27,7 @@ fi
 clear
 #===================
 
-
+mkdir backup
 echo Copying all necessary config files...
 echo Copying Samba Configuration...
 sudo cp -fv /etc/samba/smb.conf backup/
