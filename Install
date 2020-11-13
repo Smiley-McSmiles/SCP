@@ -52,8 +52,12 @@ cd ../
 sudo rm -rfv yay-git
 fi
 
-sudo chmod -fv a+x SCP
-sudo chmod -Rfv a+x scripts/*
+sudo chmod -fv ug+x SCP
+sudo chmod -Rfv ug+x scripts/*
+sudo chmod -fv a+x smiley-*
+sudo chown -fv root:root smiley-*
+sudo mv -fv smiley-scp /bin/
+sudo mv -fv smiley-scp.1 /usr/local/share/man/man1/
 
 echo Installation complete...
 sleep 2
@@ -67,7 +71,7 @@ do
  case $input in
      [yY][eE][sS]|[yY])
  #=====
- ./SCP
+ smiley-scp
  #=====
  break
  ;;
