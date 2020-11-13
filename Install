@@ -52,17 +52,19 @@ cd ../
 sudo rm -rfv yay-git
 fi
 
-sudo chmod -fv ug+x SCP
-sudo chmod -Rfv ug+x scripts/*
 sudo chmod -fv a+x smiley-*
 sudo chown -fv root:root smiley-*
 sudo mv -fv smiley-scp /bin/
 sudo mv -fv smiley-scp.1 /usr/local/share/man/man1/
+sudo mv -fv ../SCP /etc/smiley-scp
+sudo chown -Rfv root:root /etc/smiley-scp
+sudo chmod -Rfv a+x /etc/smiley-scp/scripts
+sudo chmod -Rfv a+x /etc/smiley-scp/SCP
 
 echo Installation complete...
 sleep 2
 
-#Launch SCP?
+#Launch Smiley's Control Panel?
 #===========
 while true
 do

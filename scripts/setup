@@ -16,7 +16,7 @@ clear
 #1 Restore Plex meta-data
 #======================
 if [[ $checklistChoice == *1* ]]; then
-	sudo tar xvf backup/plex/plexbackup.tar -C /
+	sudo tar xvf ~/smiley-scp-backup/plex/plexbackup.tar -C /
 fi
 #======================
 #2 Install samba and VSFTPD
@@ -38,20 +38,20 @@ if [[ $checklistChoice == *3* ]]; then
 	sleep 3
 	echo Installing Samba Configuration...
 	sleep 1
-	sudo cp -fv backup/smb.conf /etc/samba/
+	sudo cp -fv ~/smiley-scp-backup/smb.conf /etc/samba/
 	sudo chown -fv root:root /etc/samba/scp.conf
 
 	echo Installing VSFTPD Configuration...
 	sleep 1
-	sudo cp -fv backup/vsftpd.conf /etc/
-	sudo cp -fv backup/vsftpd.userlist /etc/
+	sudo cp -fv ~/smiley-scp-backup/vsftpd.conf /etc/
+	sudo cp -fv ~/smiley-scp-backup/vsftpd.userlist /etc/
 	sudo chown -fv root:root /etc/vsftpd*
 
 	if [ -x "$(command -v ufw)" ]
 		then
 			echo Installing FireWall Configuration...
 			sleep 1
-			sudo cp -fv backup/user*.rules /etc/ufw/
+			sudo cp -fv ~/smiley-scp-backup/user*.rules /etc/ufw/
 			sudo chown -fv root:root /etc/ufw/user*.rules
 
 			echo Enabling UFW FireWall...
@@ -62,7 +62,7 @@ if [[ $checklistChoice == *3* ]]; then
 		then
 			echo Installing FireWall Configuration...
 			sleep 1
-			sudo cp -fv backup/*.xml /etc/firewalld/zones/
+			sudo cp -fv ~/smiley-scp-backup/*.xml /etc/firewalld/zones/
 			sudo chown -fv root:root /etc/firewalld/zones/*.xml
 			sudo chmod -fv 700 /etc/firewalld/zones/*.xml
 			echo Reloading Firewalld

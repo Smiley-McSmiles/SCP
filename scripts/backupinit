@@ -38,11 +38,11 @@ case $CHOICE in
 
     3)
     	#Split archive for fat32
-	mkdir backup/plex/plex-split
-	echo Splitting backup/plex/plexbackup.tar--backup/plex/plex-split/plexbackup.tar.parta?
+	mkdir ~/smiley-scp-backup/plex/plex-split
+	echo Splitting ~/smiley-scp-backup/plex/plexbackup.tar--~/smiley-scp-backup/plex/plex-split/plexbackup.tar.parta?
 	sleep 1
-	time split -b 4095M backup/plex/plexbackup.tar backup/plex/plex-split/plexbackup.tar.part
-	sudo chown -Rfv $USER:$USER backup/plex/plex-split
+	time split -b 4095M ~/smiley-scp-backup/plex/plexbackup.tar ~/smiley-scp-backup/plex/plex-split/plexbackup.tar.part
+	sudo chown -Rfv $USER:$USER ~/smiley-scp-backup/plex/plex-split
 	echo Press ENTER to continue.
 	read enter
 	scripts/backupinit
@@ -50,9 +50,9 @@ case $CHOICE in
 
     4)
     	#Merge split archives
-	echo Merging backup/plex/plex-split/plexbackup.tar.parta* to backup/plex/plex-split/plexbackup.tar
+	echo Merging ~/smiley-scp-backup/plex/plex-split/plexbackup.tar.parta* to ~/smiley-scp-backup/plex/plex-split/plexbackup.tar
 	sleep 1
-	time cat backup/plex/plex-split/plexbackup.tar.parta* >backup/plex/plexbackup.tar
+	time cat ~/smiley-scp-backup/plex/plex-split/plexbackup.tar.parta* >~/smiley-scp-backup/plex/plexbackup.tar
 	echo Press ENTER to continue.
 	read enter
 	scripts/backupinit
@@ -61,10 +61,10 @@ case $CHOICE in
     5)
     	#Restore Plex meta-data
 	echo Restoring plex meta-data, please have the plexmediaserver.tar located in
-	echo backup/plex/plexmediaserver.tar
+	echo ~/smiley-scp-backup/plex/plexmediaserver.tar
 	echo Press ENTER to continue...
 	read enter
-	sudo time tar xvf backup/plex/plexbackup.tar -C /var/lib/
+	sudo time tar xvf ~/smiley-scp-backup/plex/plexbackup.tar -C /var/lib/
 	sudo time chown -rf plex:plex /var/lib/plex*
 	echo Done!
 	echo Press ENTER to continue...

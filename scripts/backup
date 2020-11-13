@@ -10,50 +10,54 @@ clear
 #if then checklist data
 #===================
 if [[ $checklistChoice == *1* ]]; then
-	rm -rfv backup
+	rm -rfv ~/smiley-scp-backup
 fi
 
 if [[ $checklistChoice == *2* ]]; then
 	echo Copying Plex Server Settings...
-	mkdir backup
-	mkdir backup/plex
-	scpDirectory=`pwd`
+	mkdir ~/smiley-scp-backup
+	mkdir ~/smiley-scp-backup/plex
 	cd /var/lib
-	sudo time tar cvf $scpDirectory/backup/plex/plexbackup.tar plex*
-	cd $scpDirectory
-	sudo chown -fv $USER:$USER backup/plex/plexbackup.tar
-	sudo chmod -fv 770 backup/plex/plexbackup.tar
+	sudo time tar cvf ~/smiley-scp-backup/plex/plexbackup.tar plex*
+	cd /etc/smiley-scp
+	sudo chown -fv $USER:$USER ~/smiley-scp-backup/plex/plexbackup.tar
+	sudo chmod -fv 770 ~/smiley-scp-backup/plex/plexbackup.tar
 fi
 clear
 #===================
 
-mkdir backup
+
 echo Copying all necessary config files...
+
+echo Copying Smileys Configuration File
+sudo cp -fv /etc/smiley-scp/scp.conf ~/smiley-scp-backup/
+
 echo Copying Samba Configuration...
-sudo cp -fv /etc/samba/smb.conf backup/
+sudo cp -fv /etc/samba/smb.conf ~/smiley-scp-backup/
 
 echo Copying VSFTPD Configuration...
-sudo cp -fv /etc/vsftpd.conf backup/
-sudo cp -fv /etc/vsftpd.userlist backup/
+sudo cp -fv /etc/vsftpd.conf ~/smiley-scp-backup/
+sudo cp -fv /etc/vsftpd.userlist ~/smiley-scp-backup/
 
 echo Copying SSHD Configuration...
-sudo cp -fv /etc/ssh/sshd_config backup/
+sudo cp -fv /etc/ssh/sshd_config ~/smiley-scp-backup/
 
 if [ -x "$(command -v ufw)" ]
 	then
 		echo Copying FireWall Configuration...
-		sudo cp -fv /etc/ufw/user*.rules backup/
+		sudo cp -fv /etc/ufw/user*.rules ~/smiley-scp-backup/
 
 elif [ -x "$(command -v firewalld)" ]
 	then
 		echo Copying FireWall Configuration...
-		sudo cp -fv /etc/firewalld/zones/FedoraWorkstation.xml backup/ 
+		sudo cp -fv /etc/firewalld/zones/FedoraWorkstation.xml ~/smiley-scp-backup/ 
 fi
 
-sudo chown -Rfv $USER:users backup
-sudo chmod -Rfv 770 backup
+sudo chown -Rfv $USER:users ~/smiley-scp-backup/
+sudo chmod -Rfv 770 ~/smiley-scp-backup/
 
 echo Done backing up..
+echo Your backup is located at ~/smiley-scp-backup
 sleep 1
 echo Press ENTER to exit
 read ENTER
