@@ -5,7 +5,7 @@ SUPPORTED DISTROBUTIONS:
 Any distrobution that uses apt, dnf, yum, or pacman.
 
 INSTALLATION:
-Simply run the Install via ./Install in terminal. You will need to allow the Install script to run as a program. Then run ./SCP and choose option 'Backup and Setup'.
+Simply run the Install via ./Install in terminal. You will need to allow the Install script to run as a program. Then run smiley-scp and choose option 'Backup and Setup'.
 
 If you do not have a backup of your Samba, VSFTPD, and UFW, You will need to navigate to those menus in SCP to set up the .conf files associated with each.
 
