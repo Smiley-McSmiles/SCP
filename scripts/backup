@@ -32,6 +32,7 @@ echo Copying all necessary config files...
 echo Copying Smileys Configuration File
 mkdir ~/smiley-scp-backup
 sudo cp -fv /etc/smiley-scp/scp.conf ~/smiley-scp-backup/
+sudo cp -fv /etc/smiley-scp/ovpn.conf ~/smiley-scp-backup/
 
 echo Copying OpenVPN Configuration Files
 sudo cp -rfv /etc/openvpn ~/smiley-scp-backup/
