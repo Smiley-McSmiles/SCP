@@ -66,14 +66,19 @@ case $CHOICE in
     6)
     	screen -S iplogger -X stuff "^C"
     	screen -d -m -S iplogger scripts/iplogger
+    	scripts/openvpn
     	;;
     
     7)
     	screen -S iplogger -X stuff "^C"
+    	scripts/openvpn
     	;;
     	
     8)
     	cat /var/log/smiley-scp/ip.log
+    	echo Press ENTER to return to Smileys Control Panel
+    	read ENTER
+    	scripts/openvpn
     
     9)
     	./SCP
