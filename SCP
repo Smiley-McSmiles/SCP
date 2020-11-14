@@ -2,7 +2,7 @@
 source scp.conf
 
 HEIGHT=20
-CHOICE_HEIGHT=11
+CHOICE_HEIGHT=13
 WIDTH=78
 BACKTITLE="SMILEYS CONTROL PANEL"
 TITLE="[C O N T R O L - P A N E L]"
@@ -12,14 +12,16 @@ OPTIONS=(
 1						"View System Monitor"
 2						"Update system"
 3						"Plex Control Panel"
-4     	 		  		"Samba Control Panel"
+4     	 		  			"Samba Control Panel"
 5						"VSFTPD Control Panel"
 6						"SSH Control Panel"
 7						"Backup & Setup"
 8						"Network Security"
-9             	 		"View Disk Utilization"
-10						"Permissions Control Panel"
-11               		"Power Management"
+9						"OpenVPN Control Panel"
+10             	 				"View Disk Utilization"
+11						"Permissions Control Panel"
+12               				"Power Management"
+13						"Uninstall Smileys Control Panel"
 )
 
 CHOICE=$(dialog --clear \
@@ -84,8 +86,13 @@ case $CHOICE in
 		fi
     	./SCP
     	;;
-
+    
     9)
+    	scripts/openvpn
+    	./SCP
+    	;;
+
+    10)
         echo Plex:
         df -h $plexmediadirectory*
         echo
@@ -104,14 +111,19 @@ case $CHOICE in
         ./SCP
     	;;
 
-    10)
+    11)
 		scripts/permissions
 		./SCP
 		;;
 
-    11)
+    12)
         scripts/power
         ./SCP
         ;;
+        
+    13)
+    	sudo rm -rfv /etc/smiley-scp
+    	sudo rm -fv /bin/smiley-scp
+    	sudo rm -fv /usr/local/share/man/man1/smiley-scp.1
     	
 esac

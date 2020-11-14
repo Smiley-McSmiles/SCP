@@ -1,11 +1,10 @@
 #!/bin/bash
-
 #Checklist Options
 #============================
 checklistChoice="$(dialog --stdout --checklist "Select items with SPACEBAR:" 0 0 0 \
   1 "Restore plexbackup.tar" off \
   2 "Install Samba VSFTPD" off \
-  3 "Restore Samba VSFTPD and Firewall config files" off \
+  3 "Restore backup configuration files" off \
   4 "Enable Samba" off \
   5 "Enable VSFTPD" off \
   6 "Create Samba user" off \
@@ -39,7 +38,17 @@ if [[ $checklistChoice == *3* ]]; then
 	echo Installing Samba Configuration...
 	sleep 1
 	sudo cp -fv ~/smiley-scp-backup/smb.conf /etc/samba/
-	sudo chown -fv root:root /etc/samba/scp.conf
+	sudo chown -fv root:root /etc/samba/smb.conf
+	
+	echo Copying Smileys Configuration File
+	sudo cp -fv ~/smiley-scp-backup/scp.conf /etc/smiley-scp/
+
+	echo Copying OpenVPN Configuration Files
+	sudo cp -fv ~/smiley-scp-backup/ovpn.conf /etc/smiley-scp/
+	sudo rm -rfv /etc/openvpn
+	sudo cp -rfv ~/smiley-scp-backup/openvpn /etc/
+	sudo chown -Rfv root:openvpn /etc/openvpn
+	sudo chmod -Rfv 440 /etc/openvpn
 
 	echo Installing VSFTPD Configuration...
 	sleep 1
@@ -146,7 +155,14 @@ fi
 dialog --title Information[!] --msgbox "Navigate to the Plex Web app to claim the server localhost:32400/web." 0 0
 #==============
 #8 scp.conf setup
-#================
+#================sudo systemctl stop openvpn-client@$defaultVPNConnection.service
+sudo rm -rfv /etc/openvpn
+sudo cp -rfv ~/smiley-scp-backup/openvpn /etc/
+sudo chown -Rfv root:openvpn /etc/openvpn
+sudo chmod -Rfv 440 /etc/openvpn
+
+sudo systemctl enable openvpn-client@$defaultVPNConnection.service
+sudo systemctl start openvpn-client@$defaultVPNConnection.service
 if [[ $checklistChoice == *8* ]]; then
 	clear && pwd && ls -l
 	rm -fv scp.conf

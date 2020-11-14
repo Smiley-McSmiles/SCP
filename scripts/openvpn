@@ -1,0 +1,65 @@
+#!/bin/bash
+source ovpn.conf
+HEIGHT=0
+CHOICE_HEIGHT=0
+WIDTH=78
+BACKTITLE="Smiley's Control Panel"
+TITLE="[O P E N V P N - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1		"Check OpenVPN Status"
+2		"Enable VPN"
+3		"Disable VPN"
+4		"Choose default OpenVPN Connection"
+5		"Add new OpenVPN connection"
+6		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+    	sudo systemctl status openvpn-client@$defaultVPNConnection.service
+        scripts/openvpn
+        ;;
+
+    2)
+    	sudo systemctl start openvpn-client@$defaultVPNConnection.service
+	sudo systemctl enable openvpn-client@$defaultVPNConnection.service
+    	scripts/openvpn
+    	;;
+
+    3)
+	sudo systemctl stop openvpn-client@$defaultVPNConnection.service
+	sudo systemctl disable openvpn-client@$defaultVPNConnection.service
+	scripts/openvpn
+	;;
+
+    4)
+	sudo ls -w 1 /etc/openvpn/client/
+	echo "Please enter the connection you'd like (excluding .conf)"
+	read defaultVPNConnection
+	sudo rm -f /etc/smiley-scp/ovpn.conf
+	sudo touch /etc/smiley-scp/ovpn.conf
+	sudo chmod 777 /etc/smiley-scp/ovpn.conf
+	echo "defaultVPNConnection=$defaultVPNConnection" >> /etc/smiley-scp/ovpn.conf
+	sudo chmod 444 /etc/smiley-scp/ovpn.conf
+	scripts/openvpn
+	;;
+
+    5)
+    	scripts/openvpn-add-connection
+    	scripts/openvpn
+    	;;
+    6)
+    	./SCP
+    	;;
+esac

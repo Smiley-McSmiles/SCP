@@ -1,0 +1,51 @@
+#!/bin/bash
+echo "Use the arrow keys to move between boxes and press 'SPACE' twice to activate a folder and to select a file(On the right hand side of the screen). ONLY SELECT .ovpn FILES!!!"
+echo
+echo Press enter to continue...
+read enter
+clear
+openVPNFile=$(dialog --stdout --title "Please choose .ovpn file" --fselect $HOME/ 14 48)
+clear
+while true
+do
+ read -r -p "Would you like to create an account file for this VPN? [y/n] " input
+ 
+ case $input in
+     [yY][eE][sS]|[yY])
+ #=====
+ accountFileName="$(dialog --stdout --inputbox "Enter the file name for new account:" 8 40)"
+ accountUserName="$(dialog --stdout --inputbox "Enter the username for new account:" 8 40)"
+ accountPassWord="$(dialog --stdout --inputbox "Enter the password for new account:" 8 40)"
+ clear
+ sudo mkdir /etc/openvpn/accounts
+ sudo touch /etc/openvpn/accounts/$accountFileName
+ sudo chown -Rfv root:openvpn /etc/openvpn/accounts
+ sudo chmod -Rfv 777 /etc/openvpn/accounts
+ echo "$accountUserName" >> /etc/openvpn/accounts/$accountFileName
+ echo "$accountPassWord" >> /etc/openvpn/accounts/$accountFileName
+ sudo chown -Rfv root:openvpn /etc/openvpn/accounts
+ sudo chmod -Rfv 440 /etc/openvpn/accounts
+ #=====
+ break
+ ;;
+     [nN][oO]|[nN])
+ clear
+ echo "Which account file would you like to use instead?"
+ echo
+ ls -w 1 /etc/openvpn/accounts/
+ read accountFileName
+ break
+ ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
+done
+sed -i "s#auth-user-pass#auth-user-pass /etc/openvpn/accounts/$accountFileName#g" $openVPNFile
+openVPNFileName="$(dialog --stdout --inputbox "Enter the file name for OpenVPN configuration:" 8 40)"
+clear 
+sudo cp -fv $openVPNFile /etc/openvpn/client/$openVPNFileName.conf
+openVPNPem=$(dialog --stdout --title "Please choose VPN .pem file" --fselect $HOME/ 14 48)
+openVPNcrt=$(dialog --stdout --title "Please choose VPN .crt file" --fselect $HOME/ 14 48)
+sudo cp -fv $openVPNPem /etc/openvpn/client/
+sudo cp -fv $openVPNcrt /etc/openvpn/client/
