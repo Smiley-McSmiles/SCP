@@ -1,4 +1,5 @@
 #!/bin/bash
+while true; do 
 remoteIp=`dig +short myip.opendns.com @resolver1.opendns.com`
 timeOfRelease=`date`
 geolocation=`geoiplookup $remoteIp`
@@ -6,7 +7,5 @@ echo "=========================================" >> /var/log/smiley-ip.log
 echo "$timeOfRelease" >> /var/log/smiley-ip.log
 echo "$remoteIp" >> /var/log/smiley-ip.log
 echo "$geolocation" >> /var/log/smiley-ip.log
-
 sleep 60
-screen -d -m -S iplogger scripts/iplogger
-
+done
