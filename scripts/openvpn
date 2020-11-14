@@ -75,7 +75,7 @@ case $CHOICE in
     	;;
     	
     8)
-    	cat /var/log/smiley-scp/ip.log
+    	cat /var/log/smiley-ip.log
     	echo Press ENTER to return to Smileys Control Panel
     	read ENTER
     	scripts/openvpn
