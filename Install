@@ -60,6 +60,10 @@ sudo mv -fv ../SCP /etc/smiley-scp
 sudo chown -Rfv root:root /etc/smiley-scp
 sudo chmod -Rfv a+x /etc/smiley-scp/scripts
 sudo chmod -Rfv a+x /etc/smiley-scp/SCP
+sudo mkdir /var/log/smiley-scp
+sudo touch /var/log/smiley-scp/ip.log
+sudo chown -Rfv root:root /var/log/smiley-scp
+sudo chmod -Rfv 776 /var/log/smiley-scp
 
 echo Installation complete...
 sleep 2

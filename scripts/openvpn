@@ -13,7 +13,10 @@ OPTIONS=(
 3		"Disable VPN"
 4		"Choose default OpenVPN Connection"
 5		"Add new OpenVPN connection"
-6		"MAIN MENU"
+6		"Start IP Logger"
+7		"Stop IP Logger"
+8		"View IP Logs"
+9		"MAIN MENU"
 )
 
 CHOICE=$(dialog --clear \
@@ -59,7 +62,20 @@ case $CHOICE in
     	scripts/openvpn-add-connection
     	scripts/openvpn
     	;;
+    
     6)
+    	screen -S iplogger -X stuff "^C"
+    	screen -d -m -S iplogger scripts/iplogger
+    	;;
+    
+    7)
+    	screen -S iplogger -X stuff "^C"
+    	;;
+    	
+    8)
+    	cat /var/log/smiley-scp/ip.log
+    
+    9)
     	./SCP
     	;;
 esac

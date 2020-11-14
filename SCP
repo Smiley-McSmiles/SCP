@@ -125,5 +125,6 @@ case $CHOICE in
     	sudo rm -rfv /etc/smiley-scp
     	sudo rm -fv /bin/smiley-scp
     	sudo rm -fv /usr/local/share/man/man1/smiley-scp.1
+    	sudo rm -rfv /var/log/smiley-scp
     	
 esac
