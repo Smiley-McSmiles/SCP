@@ -32,7 +32,7 @@ do
  clear
  echo "Which account file would you like to use instead?"
  echo
- ls -w 1 /etc/openvpn/accounts/
+ sudo ls -w 1 /etc/openvpn/accounts/
  read accountFileName
  break
  ;;
@@ -45,7 +45,9 @@ sed -i "s#auth-user-pass#auth-user-pass /etc/openvpn/accounts/$accountFileName#g
 openVPNFileName="$(dialog --stdout --inputbox "Enter the file name for OpenVPN configuration:" 8 40)"
 clear 
 sudo cp -fv $openVPNFile /etc/openvpn/client/$openVPNFileName.conf
-openVPNPem=$(dialog --stdout --title "Please choose VPN .pem file" --fselect $HOME/ 14 48)
-openVPNcrt=$(dialog --stdout --title "Please choose VPN .crt file" --fselect $HOME/ 14 48)
-sudo cp -fv $openVPNPem /etc/openvpn/client/
-sudo cp -fv $openVPNcrt /etc/openvpn/client/
+
+//Uncomment these lines if you requre .pem and .crt files
+//openVPNPem=$(dialog --stdout --title "Please choose VPN .pem file" --fselect $HOME/ 14 48)
+//openVPNcrt=$(dialog --stdout --title "Please choose VPN .crt file" --fselect $HOME/ 14 48)
+//sudo cp -fv $openVPNPem /etc/openvpn/client/
+//sudo cp -fv $openVPNcrt /etc/openvpn/client/
