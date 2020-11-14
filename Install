@@ -34,7 +34,7 @@ sleep 3
 
 echo Please enter root password to install dependancies.
 
-packagesNeeded='time git nano screen tmux dialog htop nload'
+packagesNeeded='time git nano screen tmux dialog htop nload openvpn geoip'
 if [ -x "$(command -v apt)" ];	     then sudo apt install $packagesNeeded
 elif [ -x "$(command -v dnf)" ];     then sudo dnf install $packagesNeeded
 elif [ -x "$(command -v yum)" ];     then sudo yum install $packagesNeeded
