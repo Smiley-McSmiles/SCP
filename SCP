@@ -122,6 +122,9 @@ case $CHOICE in
         ;;
         
     13)
+    	echo "*** WARNING THIS WILL DELETE ALL SCP FILES!!!***"
+    	echo "Press ENTER to Uninstall, Otherwise press CTRL + C to exit"
+    	read ENTER
     	sudo rm -rfv /etc/smiley-scp
     	sudo rm -fv /bin/smiley-scp
     	sudo rm -fv /usr/local/share/man/man1/smiley-scp.1
