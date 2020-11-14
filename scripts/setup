@@ -42,6 +42,7 @@ if [[ $checklistChoice == *3* ]]; then
 	
 	echo Copying Smileys Configuration File
 	sudo cp -fv ~/smiley-scp-backup/scp.conf /etc/smiley-scp/
+	sudo chmod -fv 776 /etc/smiley-scp/scp.conf
 
 	echo Copying OpenVPN Configuration Files
 	sudo cp -fv ~/smiley-scp-backup/ovpn.conf /etc/smiley-scp/
