@@ -79,6 +79,7 @@ case $CHOICE in
     	echo Press ENTER to return to Smileys Control Panel
     	read ENTER
     	scripts/openvpn
+    	;;
     
     9)
     	./SCP
