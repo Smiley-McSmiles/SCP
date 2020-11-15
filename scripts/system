@@ -1,0 +1,72 @@
+#!/bin/bash
+source scp.conf
+HEIGHT=0
+CHOICE_HEIGHT=0
+WIDTH=78
+BACKTITLE="Smiley's Control Panel"
+TITLE="[S Y S T E M - C O N T R O L  P A N E L]"
+MENU="What would you like to do?"
+
+OPTIONS=(
+1		"View System Monitor"
+2		"Update System"
+3		"View Disk Utilization"
+4		"Power Management"
+5		"MAIN MENU"
+)
+
+CHOICE=$(dialog --clear \
+    --backtitle "$BACKTITLE" \
+    --title "$TITLE" \
+    --menu "$MENU" \
+    $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    "${OPTIONS[@]}" \
+    2>&1 >/dev/tty)
+
+clear
+case $CHOICE in
+    1)
+        echo Press CTRL + C two times to exit.
+        sleep 2
+	    tmux new-session -d htop \; split-window nload -u K \; attach
+        ./SCP
+        ;;
+
+    2)
+    	if [ -x "$(command -v apt)" ];	     then sudo apt update && sudo apt upgrade
+		elif [ -x "$(command -v dnf)" ];     then sudo dnf upgrade
+		elif [ -x "$(command -v yum)" ];     then sudo yum update && sudo yum upgrade
+		elif [ -x "$(command -v zypper)" ];  then sudo zypper ref && sudo zypper up
+		elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu
+		else echo "FAILED TO UPDATE PACKAGES">&2; fi
+    	./SCP
+    	;;
+    
+    3)
+        echo Plex:
+        df -h $plexmediadirectory*
+        echo
+        echo Shared:
+        df -h $shareddirectory
+        echo
+        echo $USER:
+        df -h ~/
+        echo
+        echo Root:
+        df -h /
+        echo
+        echo
+        echo Press ENTER to exit
+        read enter
+        ./SCP
+    	;;
+    
+    4)
+        scripts/power
+        ./SCP
+        ;;
+    5)
+    	./SCP
+    	;;
+
+esac

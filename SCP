@@ -2,26 +2,23 @@
 source scp.conf
 
 HEIGHT=20
-CHOICE_HEIGHT=13
+CHOICE_HEIGHT=10
 WIDTH=78
 BACKTITLE="SMILEYS CONTROL PANEL"
 TITLE="[C O N T R O L - P A N E L]"
 MENU="What would you like to do?"
 
 OPTIONS=(
-1						"View System Monitor"
-2						"Update system"
-3						"Plex Control Panel"
-4     	 		  			"Samba Control Panel"
-5						"VSFTPD Control Panel"
-6						"SSH Control Panel"
-7						"Backup & Setup"
-8						"Network Security"
-9						"OpenVPN Control Panel"
-10             	 				"View Disk Utilization"
-11						"Permissions Control Panel"
-12               				"Power Management"
-13						"Uninstall Smileys Control Panel"
+1		"System Control Panel"
+2		"Plex Control Panel"
+3		"Samba Control Panel"
+4		"VSFTPD Control Panel"
+5		"SSH Control Panel"
+6		"Network Security"
+7		"OpenVPN Control Panel"
+8		"Permissions Control Panel"
+9		"Backup & Setup"
+10		"Uninstall Smileys Control Panel"
 )
 
 CHOICE=$(dialog --clear \
@@ -35,93 +32,58 @@ CHOICE=$(dialog --clear \
 clear
 case $CHOICE in
     1)
-        echo Press CTRL + C two times to exit.
-        sleep 2
-	    tmux new-session -d htop \; split-window nload -u K \; attach
+	/scripts/system
         ./SCP
         ;;
 
     2)
-    	if [ -x "$(command -v apt)" ];	     then sudo apt update && sudo apt upgrade
-		elif [ -x "$(command -v dnf)" ];     then sudo dnf upgrade
-		elif [ -x "$(command -v yum)" ];     then sudo yum update && sudo yum upgrade
-		elif [ -x "$(command -v zypper)" ];  then sudo zypper ref && sudo zypper up
-		elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu
-		else echo "FAILED TO UPDATE PACKAGES">&2; fi
-    	./SCP
-    	;;
-
-    3)
     	scripts/plex
     	./SCP
     	;;
 
-    4)
+    3)
     	scripts/smb
     	./SCP
     	;;
 
-    5)
+    4)
     	scripts/vsftpd
     	./SCP
     	;;
     
-    6)
+    5)
     	scripts/ssh
     	./SCP
     	;;
 
-    7)
-    	scripts/backupinit
-    	./SCP
-    	;;
-
-    8)
+    6)
     	if [ -x "$(command -v ufw)" ]
-			then
-				scripts/ufw
-		elif [ -x "$(command -v firewalld)" ]
-			then
-				scripts/firewalld
-		fi
+	then
+		scripts/ufw
+	elif [ -x "$(command -v firewalld)" ]
+	then
+		scripts/firewalld
+	fi
     	./SCP
     	;;
     
-    9)
+    7)
     	scripts/openvpn
     	./SCP
     	;;
 
-    10)
-        echo Plex:
-        df -h $plexmediadirectory*
-        echo
-        echo Shared:
-        df -h $shareddirectory
-        echo
-        echo $USER:
-        df -h ~/
-        echo
-        echo Root:
-        df -h /
-        echo
-        echo
-        echo Press ENTER to exit
-        read enter
-        ./SCP
+
+    8)
+	scripts/permissions
+	./SCP
+	;;
+
+    9)
+    	scripts/backupinit
+    	./SCP
     	;;
 
-    11)
-		scripts/permissions
-		./SCP
-		;;
-
-    12)
-        scripts/power
-        ./SCP
-        ;;
-        
-    13)
+    10)
     	echo "*** WARNING THIS WILL DELETE ALL SCP FILES!!!***"
     	echo "Press ENTER to Uninstall, Otherwise press CTRL + C to exit"
     	read ENTER

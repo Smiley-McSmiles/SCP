@@ -28,10 +28,6 @@ done
 
 echo Preparing to install needed dependancies for Smileys Control Panel...
 
-echo After installation run the SCP shell dialog script via ./SCP...
-
-sleep 3
-
 echo Please enter root password to install dependancies.
 
 packagesNeeded='time git nano screen tmux dialog htop nload openvpn geoip'
@@ -65,6 +61,7 @@ sudo chown -Rfv $USER:$USER /var/log/smiley-ip.log
 sudo chmod -Rfv 770 /var/log/smiley-ip.log
 
 echo Installation complete...
+cd ..
 sleep 2
 
 #Launch Smiley's Control Panel?
