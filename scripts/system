@@ -29,7 +29,7 @@ case $CHOICE in
         echo Press CTRL + C two times to exit.
         sleep 2
 	    tmux new-session -d htop \; split-window nload -u K \; attach
-        ./SCP
+        scripts/system
         ;;
 
     2)
@@ -39,7 +39,7 @@ case $CHOICE in
 		elif [ -x "$(command -v zypper)" ];  then sudo zypper ref && sudo zypper up
 		elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu
 		else echo "FAILED TO UPDATE PACKAGES">&2; fi
-    	./SCP
+    	scripts/system
     	;;
     
     3)
@@ -58,15 +58,14 @@ case $CHOICE in
         echo
         echo Press ENTER to exit
         read enter
-        ./SCP
+        scripts/system
     	;;
     
     4)
         scripts/power
-        ./SCP
         ;;
     5)
-    	./SCP
+    	scripts/system
     	;;
 
 esac
