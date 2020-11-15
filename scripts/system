@@ -65,7 +65,7 @@ case $CHOICE in
         scripts/power
         ;;
     5)
-    	scripts/system
+    	./SCP
     	;;
 
 esac
