@@ -9,7 +9,8 @@ checklistChoice="$(dialog --stdout --checklist "Select items with SPACEBAR:" 0 0
   5 "Enable VSFTPD" off \
   6 "Create Samba user" off \
   7 "Install Plex Media Server" off \
-  8 "Create scp.conf" off )"
+  8 "Create scp.conf" off \
+  9 "Restore OpenVPN" off )"
 clear
 #============================
 #1 Restore Plex meta-data
@@ -152,18 +153,11 @@ if [[ $checklistChoice == *7* ]]; then
 	echo "***WARNING*** Couldn't figure out how to install Plex Media Server. Please seek documentation about Plex and your distrobution of Linux..."
 
 	fi
-fi
 dialog --title Information[!] --msgbox "Navigate to the Plex Web app to claim the server localhost:32400/web." 0 0
+fi
 #==============
 #8 scp.conf setup
-#================sudo systemctl stop openvpn-client@$defaultVPNConnection.service
-sudo rm -rfv /etc/openvpn
-sudo cp -rfv ~/smiley-scp-backup/openvpn /etc/
-sudo chown -Rfv root:openvpn /etc/openvpn
-sudo chmod -Rfv 440 /etc/openvpn
-
-sudo systemctl enable openvpn-client@$defaultVPNConnection.service
-sudo systemctl start openvpn-client@$defaultVPNConnection.service
+#==============
 if [[ $checklistChoice == *8* ]]; then
 	clear && pwd && ls -l
 	rm -fv scp.conf
@@ -174,4 +168,15 @@ if [[ $checklistChoice == *8* ]]; then
 	echo "plexmediadirectory=$plexmediadirectory" >> scp.conf
 fi
 #================
+#9 ovpn.conf OpenVPN
+#================
+if [[ $checklistChoice == *9* ]]; then
+	sudo rm -rfv /etc/openvpn
+	sudo cp -rfv ~/smiley-scp-backup/openvpn /etc/
+	sudo chown -Rfv root:openvpn /etc/openvpn
+	sudo chmod -Rfv 440 /etc/openvpn
 
+	sudo systemctl enable openvpn-client@$defaultVPNConnection.service
+	sudo systemctl start openvpn-client@$defaultVPNConnection.service
+fi
+#================
