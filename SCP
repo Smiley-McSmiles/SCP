@@ -32,7 +32,7 @@ CHOICE=$(dialog --clear \
 clear
 case $CHOICE in
     1)
-	/scripts/system
+	scripts/system
         ./SCP
         ;;
 
