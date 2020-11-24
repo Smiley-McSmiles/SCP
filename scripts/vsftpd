@@ -9,7 +9,7 @@ MENU="What would you like to do?"
 OPTIONS=(
 1				"Check VSFTPD Status"
 2				"Edit vsftpd.conf"
-3				"Edit vsftpd.userlist"
+3				"Edit user_list"
 4               		"Start VSFTPD"
 5               		"Stop VSFTPD"
 6               		"Restart VSFTPD"
@@ -35,12 +35,12 @@ case $CHOICE in
         ;;
 
     2)
-	sudo nano /etc/vsftpd.conf
+	sudo nano /etc/vsftpd/vsftpd.conf
     	scripts/vsftpd
     	;;
 
     3)
-    	sudo nano /etc/vsftpd.userlist
+    	sudo nano /etc/vsftpd/user_list
     	scripts/vsftpd
     	;;
 
