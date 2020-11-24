@@ -54,9 +54,9 @@ if [[ $checklistChoice == *3* ]]; then
 
 	echo Installing VSFTPD Configuration...
 	sleep 1
-	sudo cp -fv ~/smiley-scp-backup/vsftpd.conf /etc/
-	sudo cp -fv ~/smiley-scp-backup/vsftpd.userlist /etc/
-	sudo chown -fv root:root /etc/vsftpd*
+	sudo cp -fv ~/smiley-scp-backup/vsftpd.conf /etc/vsftpd/
+	sudo cp -fv ~/smiley-scp-backup/user_list /etc/vsftpd/
+	sudo chown -Rfv root:root /etc/vsftpd
 
 	if [ -x "$(command -v ufw)" ]
 		then
