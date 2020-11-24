@@ -43,8 +43,8 @@ echo Copying Samba Configuration...
 sudo cp -fv /etc/samba/smb.conf ~/smiley-scp-backup/
 
 echo Copying VSFTPD Configuration...
-sudo cp -fv /etc/vsftpd.conf ~/smiley-scp-backup/
-sudo cp -fv /etc/vsftpd.userlist ~/smiley-scp-backup/
+sudo cp -fv /etc/vsftpd/vsftpd.conf ~/smiley-scp-backup/
+sudo cp -fv /etc/vsftpd/user_list ~/smiley-scp-backup/
 
 echo Copying SSHD Configuration...
 sudo cp -fv /etc/ssh/sshd_config ~/smiley-scp-backup/
