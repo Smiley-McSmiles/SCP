@@ -9,14 +9,15 @@ MENU="What would you like to do?"
 
 OPTIONS=(
 1		"Check OpenVPN Status"
-2		"Enable VPN"
-3		"Disable VPN"
-4		"Choose default OpenVPN Connection"
-5		"Add new OpenVPN connection"
-6		"Start IP Logger"
-7		"Stop IP Logger"
-8		"View IP Logs"
-9		"MAIN MENU"
+2		"Enable & Start VPN"
+3		"Disable & Stop VPN"
+4		"Restart VPN"
+5		"Choose default OpenVPN Connection"
+6		"Add new OpenVPN connection"
+7		"Start IP Logger"
+8		"Stop IP Logger"
+9		"View IP Logs"
+10		"MAIN MENU"
 )
 
 CHOICE=$(dialog --clear \
@@ -35,18 +36,19 @@ case $CHOICE in
         ;;
 
     2)
-    	sudo systemctl start openvpn-client@$defaultVPNConnection.service
-	sudo systemctl enable openvpn-client@$defaultVPNConnection.service
+	sudo systemctl enable --now openvpn-client@$defaultVPNConnection.service
     	scripts/openvpn
     	;;
 
     3)
-	sudo systemctl stop openvpn-client@$defaultVPNConnection.service
-	sudo systemctl disable openvpn-client@$defaultVPNConnection.service
+	sudo systemctl disable --now openvpn-client@$defaultVPNConnection.service
 	scripts/openvpn
 	;;
 
     4)
+    	sudo systemctl restart openvpn-client@$defaultVPNConnection.service
+
+    5)
 	sudo ls -w 1 /etc/openvpn/client/
 	echo "Please enter the connection you'd like (excluding .conf)"
 	read defaultVPNConnection
@@ -58,30 +60,30 @@ case $CHOICE in
 	scripts/openvpn
 	;;
 
-    5)
-    	scripts/openvpn-add-connection
-    	scripts/openvpn
-    	;;
-    
     6)
-    	screen -S iplogger -X stuff "^C"
-    	screen -d -m -S iplogger scripts/iplogger
+    	scripts/openvpn-add-connection
     	scripts/openvpn
     	;;
     
     7)
     	screen -S iplogger -X stuff "^C"
+    	screen -d -m -S iplogger scripts/iplogger
+    	scripts/openvpn
+    	;;
+    
+    8)
+    	screen -S iplogger -X stuff "^C"
     	scripts/openvpn
     	;;
     	
-    8)
+    9)
     	cat /var/log/smiley-ip.log
     	echo Press ENTER to return to Smileys Control Panel
     	read ENTER
     	scripts/openvpn
     	;;
     
-    9)
+    10)
     	./SCP
     	;;
 esac
