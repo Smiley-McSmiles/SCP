@@ -29,12 +29,14 @@ case $CHOICE in
         ;;
 
     2)
-        if [ -x "$(command -v apt)" ];	     then sudo apt update && sudo apt upgrade
-		elif [ -x "$(command -v dnf)" ];     then sudo dnf upgrade
-		elif [ -x "$(command -v yum)" ];     then sudo yum update && sudo yum upgrade
-		elif [ -x "$(command -v zypper)" ];  then sudo zypper ref && sudo zypper up
-		elif [ -x "$(command -v pacman)" ];  then sudo pacman -Syu
+    	if [ -x "$(command -v apt)" ];			then sudo apt update && sudo apt upgrade
+		elif [ -x "$(command -v dnf)" ];	then sudo dnf upgrade -y
+		elif [ -x "$(command -v yum)" ];	then sudo yum update && sudo yum upgrade
+		elif [ -x "$(command -v zypper)" ];	then sudo zypper ref && sudo zypper up
+		elif [ -x "$(command -v pacman)" ];	then sudo pacman -Syu
 		else echo "FAILED TO UPDATE PACKAGES">&2; fi
+	if [ -x "$(command -v flatpak)" ];		then sudo flatpak update
+		else echo "FAILED TO UPDATE FLATPAK">&2; fi
     	sudo reboot
     	;;
 
