@@ -47,6 +47,8 @@ case $CHOICE in
 
     4)
     	sudo systemctl restart openvpn-client@$defaultVPNConnection.service
+    	scripts/openvpn
+    	;;
 
     5)
 	sudo ls -w 1 /etc/openvpn/client/
