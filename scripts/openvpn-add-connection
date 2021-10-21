@@ -3,6 +3,8 @@ echo "Use the arrow keys to move between boxes and press 'SPACE' twice to activa
 echo
 echo Press enter to continue...
 read enter
+sudo mkdir /etc/openvpn/accounts
+
 clear
 openVPNFile=$(dialog --stdout --title "Please choose .ovpn file" --fselect $HOME/ 14 48)
 clear
@@ -17,7 +19,6 @@ do
  accountUserName="$(dialog --stdout --inputbox "Enter the username for new account:" 8 40)"
  accountPassWord="$(dialog --stdout --inputbox "Enter the password for new account:" 8 40)"
  clear
- sudo mkdir /etc/openvpn/accounts
  sudo touch /etc/openvpn/accounts/$accountFileName
  sudo chown -Rfv root:openvpn /etc/openvpn/accounts
  sudo chmod -Rfv 777 /etc/openvpn/accounts
